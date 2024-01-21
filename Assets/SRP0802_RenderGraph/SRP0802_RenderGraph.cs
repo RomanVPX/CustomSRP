@@ -23,31 +23,30 @@ public partial class SRP0802_RenderGraph : RenderPipeline
             BeginCameraRendering(context,camera);
 
             //Culling
-            ScriptableCullingParameters cullingParams;
-            if (!camera.TryGetCullingParameters(out cullingParams)) continue;
+            if (!camera.TryGetCullingParameters(out ScriptableCullingParameters cullingParams)) continue;
             CullingResults cull = context.Cull(ref cullingParams);
 
             //Camera setup some builtin variables e.g. camera projection matrices etc
             context.SetupCameraProperties(camera);
 
             //Execute graph 
-            CommandBuffer cmdRG = CommandBufferPool.Get("ExecuteRenderGraph");
+            CommandBuffer cmd_RenderGraph = CommandBufferPool.Get("ExecuteRenderGraph");
             var rgParams = new RenderGraphParameters()
             {
                 executionName = "SRP0802_RenderGraph_Execute",
-                commandBuffer = cmdRG,
+                commandBuffer = cmd_RenderGraph,
                 scriptableRenderContext = context,
                 currentFrameIndex = Time.frameCount
             };
 
             using (graph.RecordAndExecute(rgParams))
             {
-                SRP0802_BasePassData basePassData = Render_SRP0802_BasePass(camera,graph,cull); //BasePass
-                Render_SRP0802_AddPass(graph,basePassData.m_Albedo,basePassData.m_Emission); //AddPass
+                SRP0802_BasePassData basePassData = Render_SRP0802_BasePass(camera, graph, cull); //BasePass
+                Render_SRP0802_AddPass(graph, basePassData.m_Albedo, basePassData.m_Emission); //AddPass
             }
 
-            context.ExecuteCommandBuffer(cmdRG);
-            CommandBufferPool.Release(cmdRG);
+            context.ExecuteCommandBuffer(cmd_RenderGraph);
+            CommandBufferPool.Release(cmd_RenderGraph);
             
             //Submit camera rendering
             context.Submit();
