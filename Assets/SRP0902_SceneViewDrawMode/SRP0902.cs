@@ -7,7 +7,7 @@ public class SRP0902 : RenderPipelineAsset
 {
     #if UNITY_EDITOR
     [UnityEditor.MenuItem("Assets/Create/Render Pipeline/SRP0902", priority = 1)]
-    static void CreateSRP0902()
+    private static void CreateSRP0902()
     {
         var instance = ScriptableObject.CreateInstance<SRP0902>();
         UnityEditor.AssetDatabase.CreateAsset(instance, "Assets/SRP0902.asset");
@@ -54,15 +54,15 @@ public class SRP0902Instance : RenderPipeline
             bool clearColor = camera.clearFlags == CameraClearFlags.Color? true : false;
 
             //Camera clear flag
-            CommandBuffer cmd = new CommandBuffer();
+            var cmd = new CommandBuffer();
             cmd.ClearRenderTarget(clearDepth, clearColor, camera.backgroundColor);
             context.ExecuteCommandBuffer(cmd);
             cmd.Release();
 
             //Setup DrawSettings and FilterSettings
             var sortingSettings = new SortingSettings(camera);
-            DrawingSettings drawSettings = new DrawingSettings(m_PassName, sortingSettings);
-            FilteringSettings filterSettings = new FilteringSettings(RenderQueueRange.all);
+            var drawSettings = new DrawingSettings(m_PassName, sortingSettings);
+            var filterSettings = new FilteringSettings(RenderQueueRange.all);
 
             //Skybox
             if(drawSkyBox)  {  context.DrawSkybox(camera);  }
@@ -77,7 +77,7 @@ public class SRP0902Instance : RenderPipeline
                     {
                         sortingSettings.criteria = SortingCriteria.None;
                         filterSettings.renderQueueRange = RenderQueueRange.all;
-                        DrawingSettings debugSettings = new DrawingSettings(new ShaderTagId("debugMaterial"), sortingSettings)
+                        var debugSettings = new DrawingSettings(new ShaderTagId("debugMaterial"), sortingSettings)
                         {
                             perObjectData = PerObjectData.None,
                             overrideMaterial = debugMaterial,

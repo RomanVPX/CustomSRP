@@ -9,7 +9,7 @@ public class SRP0701_RTHandle : RenderPipelineAsset
 {
     #if UNITY_EDITOR
     [UnityEditor.MenuItem("Assets/Create/Render Pipeline/SRP0701_RTHandle", priority = 1)]
-    static void CreateSRP0701_RTHandle()
+    private static void CreateSRP0701_RTHandle()
     {
         var instance = ScriptableObject.CreateInstance<SRP0701_RTHandle>();
         UnityEditor.AssetDatabase.CreateAsset(instance, "Assets/SRP0701_RTHandle.asset");
@@ -51,7 +51,7 @@ public class SRP0701_RTHandleInstance : RenderPipeline
             context.SetupCameraProperties(camera);
 
             //Get the setting from camera component
-            ClearFlag clear = ClearFlag.All;
+            var clear = ClearFlag.All;
             switch(camera.clearFlags)
             {
                 case CameraClearFlags.Skybox: clear = ClearFlag.Depth; break;
@@ -60,7 +60,7 @@ public class SRP0701_RTHandleInstance : RenderPipeline
             }
            
             UnityEngine.Experimental.Rendering.GraphicsFormat format = camera.allowHDR ? m_ColorFormatHDR : m_ColorFormat;
-            MSAASamples msaa = MSAASamples.None;
+            var msaa = MSAASamples.None;
             if(camera.allowMSAA)
             {
                 switch( QualitySettings.antiAliasing )
@@ -77,7 +77,7 @@ public class SRP0701_RTHandleInstance : RenderPipeline
             RTHandle m_ColorRT = RTHandles.Alloc(scaleFactor: Vector2.one, colorFormat: format, depthBufferBits: DepthBits.None, msaaSamples: msaa, name: "_CameraColorRT");
 
             //Set RenderTarget & Camera clear flag
-            CommandBuffer cmd = new CommandBuffer();
+            var cmd = new CommandBuffer();
             cmd.name = "SetRT and Clear";
             CoreUtils.SetRenderTarget(cmd,m_ColorRT,clear,camera.backgroundColor);
             context.ExecuteCommandBuffer(cmd);
@@ -85,26 +85,26 @@ public class SRP0701_RTHandleInstance : RenderPipeline
 
             //Setup DrawSettings and FilterSettings
             var sortingSettings = new SortingSettings(camera);
-            DrawingSettings drawSettings = new DrawingSettings(m_PassName, sortingSettings);
-            FilteringSettings filterSettings = new FilteringSettings(RenderQueueRange.all);
+            var drawSettings = new DrawingSettings(m_PassName, sortingSettings);
+            var filterSettings = new FilteringSettings(RenderQueueRange.all);
 
             //Skybox
             if(camera.clearFlags == CameraClearFlags.Skybox)  {  context.DrawSkybox(camera);  }
 
             //RendererList Opaque
-            UnityEngine.Rendering.RendererUtils.RendererListDesc rendererDesc_Opaque = new UnityEngine.Rendering.RendererUtils.RendererListDesc(m_PassName,cull,camera);
+            var rendererDesc_Opaque = new UnityEngine.Rendering.RendererUtils.RendererListDesc(m_PassName,cull,camera);
             rendererDesc_Opaque.sortingCriteria = SortingCriteria.CommonOpaque;
             rendererDesc_Opaque.renderQueueRange = RenderQueueRange.opaque;
             UnityEngine.Rendering.RendererList rdlist_Opaque = context.CreateRendererList(rendererDesc_Opaque);
 
             //RendererList Transparent
-            UnityEngine.Rendering.RendererUtils.RendererListDesc rendererDesc_Transparent = new UnityEngine.Rendering.RendererUtils.RendererListDesc(m_PassName,cull,camera);
+            var rendererDesc_Transparent = new UnityEngine.Rendering.RendererUtils.RendererListDesc(m_PassName,cull,camera);
             rendererDesc_Transparent.sortingCriteria = SortingCriteria.CommonTransparent;
             rendererDesc_Transparent.renderQueueRange = RenderQueueRange.transparent;
             UnityEngine.Rendering.RendererList rdlist_Transparent = context.CreateRendererList(rendererDesc_Transparent);
 
             //Draw RendererLists
-            CommandBuffer cmdRender = new CommandBuffer();
+            var cmdRender = new CommandBuffer();
             cmdRender.name = "Draw RendererLists";
             CoreUtils.DrawRendererList(context,cmdRender,rdlist_Opaque);
             CoreUtils.DrawRendererList(context,cmdRender,rdlist_Transparent);
@@ -112,7 +112,7 @@ public class SRP0701_RTHandleInstance : RenderPipeline
             cmdRender.Release();
 
             //Blit the content back to screen
-            CommandBuffer cmdBlitToCam = new CommandBuffer();
+            var cmdBlitToCam = new CommandBuffer();
             cmdBlitToCam.name = "("+camera.name+")"+ "Blit back to Camera";
             cmdBlitToCam.Blit(m_ColorRT, BuiltinRenderTextureType.CameraTarget);
             context.ExecuteCommandBuffer(cmdBlitToCam);

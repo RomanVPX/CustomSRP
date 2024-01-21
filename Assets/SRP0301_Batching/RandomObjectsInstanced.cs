@@ -6,7 +6,7 @@ public class RandomObjectsInstanced : MonoBehaviour
 {
 	public Renderer[] renderers;
 
-	void Start () 
+    private void Start () 
 	{
 		Randomize();
 	}
@@ -22,7 +22,7 @@ public class RandomObjectsInstanced : MonoBehaviour
 		if(renderers==null) UpdateList();
 		if(renderers==null) return;
 
-		MaterialPropertyBlock props = new MaterialPropertyBlock();
+		var props = new MaterialPropertyBlock();
 		
 		for(int i = 0; i <renderers.Length; i++)
 		{

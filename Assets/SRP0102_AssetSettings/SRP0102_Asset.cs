@@ -22,12 +22,12 @@ namespace SRP0102
         #if UNITY_EDITOR
 
         [MenuItem("Assets/Create/Render Pipeline/SRP0102", priority = 1)]
-        static void CreateSRP0102()
+        private static void CreateSRP0102()
         {
             ProjectWindowUtil.StartNameEditingIfProjectWindowExists(0, CreateInstance<CreateSRP0102_Asset>(),"SRP0102.asset", null, null);
         }
 
-        class CreateSRP0102_Asset : EndNameEditAction
+        private class CreateSRP0102_Asset : EndNameEditAction
         {
             public override void Action(int instanceId, string pathName, string resourceFile)
             {

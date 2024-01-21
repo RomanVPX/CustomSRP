@@ -7,7 +7,7 @@ public class SRP0502 : RenderPipelineAsset
 {
     #if UNITY_EDITOR
     [UnityEditor.MenuItem("Assets/Create/Render Pipeline/SRP0502", priority = 1)]
-    static void CreateSRP0502()
+    private static void CreateSRP0502()
     {
         var instance = ScriptableObject.CreateInstance<SRP0502>();
         UnityEditor.AssetDatabase.CreateAsset(instance, "Assets/SRP0502.asset");
@@ -58,7 +58,7 @@ public class SRP0502Instance : RenderPipeline
             bool clearColor = camera.clearFlags == CameraClearFlags.Color? true : false;
 
             //Color Texture Descriptor
-            RenderTextureDescriptor colorRTDesc = new RenderTextureDescriptor(camera.pixelWidth, camera.pixelHeight);
+            var colorRTDesc = new RenderTextureDescriptor(camera.pixelWidth, camera.pixelHeight);
             colorRTDesc.graphicsFormat = m_ColorFormat;
             colorRTDesc.depthBufferBits = depthBufferBits;
             colorRTDesc.sRGB = (QualitySettings.activeColorSpace == ColorSpace.Linear);
@@ -66,7 +66,7 @@ public class SRP0502Instance : RenderPipeline
             colorRTDesc.enableRandomWrite = false;
 
             //Set Temp RT & set render target to the RT
-            CommandBuffer cmdTempId = new CommandBuffer();
+            var cmdTempId = new CommandBuffer();
             cmdTempId.name = "("+camera.name+")"+ "Setup TempRT";
             cmdTempId.GetTemporaryRT(m_ColorRTid, colorRTDesc,FilterMode.Bilinear);
             context.ExecuteCommandBuffer(cmdTempId);
@@ -74,12 +74,12 @@ public class SRP0502Instance : RenderPipeline
 
             //Setup DrawSettings and FilterSettings
             var sortingSettings = new SortingSettings(camera);
-            DrawingSettings drawSettings = new DrawingSettings(m_PassName, sortingSettings);
-            DrawingSettings drawSettingsDistortion = new DrawingSettings(m_PassNameDistortion, sortingSettings);
-            FilteringSettings filterSettings = new FilteringSettings(RenderQueueRange.all);
+            var drawSettings = new DrawingSettings(m_PassName, sortingSettings);
+            var drawSettingsDistortion = new DrawingSettings(m_PassNameDistortion, sortingSettings);
+            var filterSettings = new FilteringSettings(RenderQueueRange.all);
 
             //Camera clear flag
-            CommandBuffer cmd = new CommandBuffer();
+            var cmd = new CommandBuffer();
             cmd.ClearRenderTarget(clearDepth, clearColor, camera.backgroundColor);
             context.ExecuteCommandBuffer(cmd);
             cmd.Release();
@@ -100,7 +100,7 @@ public class SRP0502Instance : RenderPipeline
             context.DrawRenderers(cull, ref drawSettings, ref filterSettings);
 
             //Blit to color texture
-            CommandBuffer cmdBlitToTex = new CommandBuffer();
+            var cmdBlitToTex = new CommandBuffer();
             cmdBlitToTex.name = "("+camera.name+")"+ "Blit to Color Texture";
             cmdBlitToTex.Blit(BuiltinRenderTextureType.CameraTarget,m_ColorRT);
             cmdBlitToTex.SetGlobalTexture(m_ColorRTid,m_ColorRT);
@@ -115,7 +115,7 @@ public class SRP0502Instance : RenderPipeline
             context.DrawRenderers(cull, ref drawSettingsDistortion, ref filterSettings);
 
             //Clean Up
-            CommandBuffer cmdclean = new CommandBuffer();
+            var cmdclean = new CommandBuffer();
             cmdclean.name = "("+camera.name+")"+ "Clean Up";
             cmdclean.ReleaseTemporaryRT(m_ColorRTid);
             context.ExecuteCommandBuffer(cmdclean);

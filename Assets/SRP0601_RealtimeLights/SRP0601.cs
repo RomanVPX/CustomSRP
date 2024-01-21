@@ -8,7 +8,7 @@ public class SRP0601 : RenderPipelineAsset
 {
     #if UNITY_EDITOR
     [UnityEditor.MenuItem("Assets/Create/Render Pipeline/SRP0601", priority = 1)]
-    static void CreateSRP0601()
+    private static void CreateSRP0601()
     {
         var instance = ScriptableObject.CreateInstance<SRP0601>();
         UnityEditor.AssetDatabase.CreateAsset(instance, "Assets/SRP0601.asset");
@@ -26,13 +26,13 @@ public class SRP0601Instance : RenderPipeline
     private static readonly ShaderTagId m_PassName = new ShaderTagId("SRP0601_Pass"); //The shader pass tag just for SRP0601
 
     //Realtime Lights
-    static int lightColorID = Shader.PropertyToID("_LightColorArray");
-    static int lightDataID = Shader.PropertyToID("_LightDataArray");
-    static int lightSpotDirID = Shader.PropertyToID("_LightSpotDirArray");
-    private const int lightCount = 16;      
-    Vector4[] lightColor = new Vector4[lightCount];
-    Vector4[] lightData = new Vector4[lightCount];
-    Vector4[] lightSpotDir = new Vector4[lightCount];
+    private static int lightColorID = Shader.PropertyToID("_LightColorArray");
+    private static int lightDataID = Shader.PropertyToID("_LightDataArray");
+    private static int lightSpotDirID = Shader.PropertyToID("_LightSpotDirArray");
+    private const int lightCount = 16;
+    private Vector4[] lightColor = new Vector4[lightCount];
+    private Vector4[] lightData = new Vector4[lightCount];
+    private Vector4[] lightSpotDir = new Vector4[lightCount];
 
     public SRP0601Instance()
     {
@@ -71,11 +71,11 @@ public class SRP0601Instance : RenderPipeline
 
             //Setup DrawSettings and FilterSettings
             var sortingSettings = new SortingSettings(camera);
-            DrawingSettings drawSettings = new DrawingSettings(m_PassName, sortingSettings)
+            var drawSettings = new DrawingSettings(m_PassName, sortingSettings)
             {
                 perObjectData = PerObjectData.LightIndices | PerObjectData.LightData
             };
-            FilteringSettings filterSettings = new FilteringSettings(RenderQueueRange.all);
+            var filterSettings = new FilteringSettings(RenderQueueRange.all);
 
             if(!GraphicsSettings.useScriptableRenderPipelineBatching)
             {

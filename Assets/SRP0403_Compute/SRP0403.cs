@@ -51,7 +51,7 @@ namespace SRP0403
                 bool clearColor = camera.clearFlags == CameraClearFlags.Color? true : false;
 
                 //Color Texture Descriptor
-                RenderTextureDescriptor colorRTDesc = new RenderTextureDescriptor(camera.pixelWidth, camera.pixelHeight);
+                var colorRTDesc = new RenderTextureDescriptor(camera.pixelWidth, camera.pixelHeight);
                 colorRTDesc.graphicsFormat = m_ColorFormat;
                 colorRTDesc.depthBufferBits = depthBufferBits;
                 colorRTDesc.sRGB = (QualitySettings.activeColorSpace == ColorSpace.Linear);
@@ -59,12 +59,12 @@ namespace SRP0403
                 colorRTDesc.enableRandomWrite = true; //For compute
 
                 //Depth Texture Descriptor
-                RenderTextureDescriptor depthRTDesc = new RenderTextureDescriptor(camera.pixelWidth, camera.pixelHeight);
+                var depthRTDesc = new RenderTextureDescriptor(camera.pixelWidth, camera.pixelHeight);
                 depthRTDesc.colorFormat = RenderTextureFormat.Depth;
                 depthRTDesc.depthBufferBits = depthBufferBits;
 
                 //Set texture temp RT
-                CommandBuffer cmdTempId = new CommandBuffer();
+                var cmdTempId = new CommandBuffer();
                 cmdTempId.name = "("+camera.name+")"+ "Setup TempRT";
                 cmdTempId.GetTemporaryRT(m_ColorRTid, colorRTDesc,FilterMode.Bilinear);
                 cmdTempId.GetTemporaryRT(m_DepthRTid, depthRTDesc,FilterMode.Bilinear);
@@ -73,9 +73,9 @@ namespace SRP0403
 
                 //Setup DrawSettings and FilterSettings
                 var sortingSettings = new SortingSettings(camera);
-                DrawingSettings drawSettings = new DrawingSettings(m_PassName, sortingSettings);
-                FilteringSettings filterSettings = new FilteringSettings(RenderQueueRange.all);
-                DrawingSettings drawSettingsDepth = new DrawingSettings(m_PassName, sortingSettings)
+                var drawSettings = new DrawingSettings(m_PassName, sortingSettings);
+                var filterSettings = new FilteringSettings(RenderQueueRange.all);
+                var drawSettingsDepth = new DrawingSettings(m_PassName, sortingSettings)
                 {
                     perObjectData = PerObjectData.None,
                     overrideMaterial = depthOnlyMaterial,
@@ -83,7 +83,7 @@ namespace SRP0403
                 };
 
                 //Clear Depth Texture
-                CommandBuffer cmdDepth = new CommandBuffer();
+                var cmdDepth = new CommandBuffer();
                 cmdDepth.name = "("+camera.name+")"+ "Depth Clear Flag";
                 cmdDepth.SetRenderTarget(m_DepthRT); //Set CameraTarget to the depth texture
                 cmdDepth.ClearRenderTarget(true, true, Color.black);
@@ -103,14 +103,14 @@ namespace SRP0403
                 context.DrawRenderers(cull, ref drawSettingsDepth, ref filterSettings);
 
                 //To let shader has _CameraDepthTexture
-                CommandBuffer cmdDepthTexture = new CommandBuffer();
+                var cmdDepthTexture = new CommandBuffer();
                 cmdDepthTexture.name = "("+camera.name+")"+ "Depth Texture";
                 cmdDepthTexture.SetGlobalTexture(m_DepthRTid,m_DepthRT);
                 context.ExecuteCommandBuffer(cmdDepthTexture);
                 cmdDepthTexture.Release();
 
                 //Camera clear flag
-                CommandBuffer cmd = new CommandBuffer();
+                var cmd = new CommandBuffer();
                 cmd.SetRenderTarget(m_ColorRT); //Remember to set target
                 cmd.ClearRenderTarget(clearDepth, clearColor, camera.backgroundColor);
                 context.ExecuteCommandBuffer(cmd);
@@ -134,7 +134,7 @@ namespace SRP0403
                 //Run Compute shader
                 if(m_PipelineAsset.computeShader != null)
                 {
-                    CommandBuffer cmdCompute = new CommandBuffer();
+                    var cmdCompute = new CommandBuffer();
                     cmdCompute.name = "("+camera.name+")"+ "Compute";
                     cmdCompute.SetComputeIntParam(m_PipelineAsset.computeShader, "range",m_PipelineAsset.detectRange);
                     cmdCompute.SetComputeFloatParam(m_PipelineAsset.computeShader, "detect",m_PipelineAsset.edgeDetect);
@@ -146,14 +146,14 @@ namespace SRP0403
                 }
 
                 //Blit the content back to screen
-                CommandBuffer cmdBlitToCam = new CommandBuffer();
+                var cmdBlitToCam = new CommandBuffer();
                 cmdBlitToCam.name = "("+camera.name+")"+ "Blit back to Camera";
                 cmdBlitToCam.Blit(m_ColorRT, BuiltinRenderTextureType.CameraTarget);
                 context.ExecuteCommandBuffer(cmdBlitToCam);
                 cmdBlitToCam.Release();
 
                 //Clean Up
-                CommandBuffer cmdclean = new CommandBuffer();
+                var cmdclean = new CommandBuffer();
                 cmdclean.name = "("+camera.name+")"+ "Clean Up";
                 cmdclean.ReleaseTemporaryRT(m_DepthRTid);
                 cmdclean.ReleaseTemporaryRT(m_ColorRTid);

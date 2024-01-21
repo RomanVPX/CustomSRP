@@ -7,7 +7,7 @@ public class SRP1002 : RenderPipelineAsset
 {
     #if UNITY_EDITOR
     [UnityEditor.MenuItem("Assets/Create/Render Pipeline/SRP1002", priority = 1)]
-    static void CreateSRP1002()
+    private static void CreateSRP1002()
     {
         var instance = ScriptableObject.CreateInstance<SRP1002>();
         UnityEditor.AssetDatabase.CreateAsset(instance, "Assets/SRP1002.asset");
@@ -70,7 +70,7 @@ public class SRP1002Instance : RenderPipeline
             bool clearColor = camera.clearFlags == CameraClearFlags.Color? true : false;
 
             //Color Texture Descriptor
-            RenderTextureDescriptor colorRTDesc = new RenderTextureDescriptor(camera.pixelWidth, camera.pixelHeight);
+            var colorRTDesc = new RenderTextureDescriptor(camera.pixelWidth, camera.pixelHeight);
             colorRTDesc.graphicsFormat = m_ColorFormat;
             colorRTDesc.depthBufferBits = depthBufferBits;
             colorRTDesc.sRGB = (QualitySettings.activeColorSpace == ColorSpace.Linear);
@@ -79,8 +79,8 @@ public class SRP1002Instance : RenderPipeline
 
             //Setup DrawSettings and FilterSettings
             var sortingSettings = new SortingSettings(camera);
-            DrawingSettings drawSettings = new DrawingSettings(m_PassName, sortingSettings);
-            FilteringSettings filterSettings = new FilteringSettings(RenderQueueRange.all);
+            var drawSettings = new DrawingSettings(m_PassName, sortingSettings);
+            var filterSettings = new FilteringSettings(RenderQueueRange.all);
 
             //cmd.BeginSample("xxx");
             //cmd.EndSample("xxx");

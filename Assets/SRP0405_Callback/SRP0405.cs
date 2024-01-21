@@ -8,7 +8,7 @@ public class SRP0405 : RenderPipelineAsset
 {
     #if UNITY_EDITOR
     [UnityEditor.MenuItem("Assets/Create/Render Pipeline/SRP0405", priority = 1)]
-    static void CreateSRP0405()
+    private static void CreateSRP0405()
     {
         var instance = ScriptableObject.CreateInstance<SRP0405>();
         UnityEditor.AssetDatabase.CreateAsset(instance, "Assets/SRP0405.asset");
@@ -72,15 +72,15 @@ public class SRP0405Instance : RenderPipeline
             bool clearColor = camera.clearFlags == CameraClearFlags.Color? true : false;
 
             //Camera clear flag
-            CommandBuffer cmd = new CommandBuffer();
+            var cmd = new CommandBuffer();
             cmd.ClearRenderTarget(clearDepth, clearColor, camera.backgroundColor);
             context.ExecuteCommandBuffer(cmd);
             cmd.Release();
 
             //Setup DrawSettings and FilterSettings
             var sortingSettings = new SortingSettings(camera);
-            DrawingSettings drawSettings = new DrawingSettings(m_PassName, sortingSettings);
-            FilteringSettings filterSettings = new FilteringSettings(RenderQueueRange.all);
+            var drawSettings = new DrawingSettings(m_PassName, sortingSettings);
+            var filterSettings = new FilteringSettings(RenderQueueRange.all);
 
             //Skybox
             if(drawSkyBox)  {  context.DrawSkybox(camera);  }

@@ -8,7 +8,7 @@ public class SRP0702 : RenderPipelineAsset
 {
     #if UNITY_EDITOR
     [UnityEditor.MenuItem("Assets/Create/Render Pipeline/SRP0702", priority = 1)]
-    static void CreateSRP0702()
+    private static void CreateSRP0702()
     {
         var instance = ScriptableObject.CreateInstance<SRP0702>();
         UnityEditor.AssetDatabase.CreateAsset(instance, "Assets/SRP0702.asset");
@@ -64,12 +64,12 @@ public class SRP0702Instance : RenderPipeline
 
             //************************** Set TempRT ************************************
 
-            CommandBuffer cmdTempId = new CommandBuffer();
+            var cmdTempId = new CommandBuffer();
             cmdTempId.name = "("+camera.name+")"+ "Setup TempRT";
 
             //Color
             m_ColorFormatActive = camera.allowHDR ? m_ColorFormatHDR : m_ColorFormat;
-            RenderTextureDescriptor colorRTDesc = new RenderTextureDescriptor(camera.pixelWidth, camera.pixelHeight);
+            var colorRTDesc = new RenderTextureDescriptor(camera.pixelWidth, camera.pixelHeight);
             colorRTDesc.graphicsFormat = m_ColorFormatActive;
             colorRTDesc.depthBufferBits = depthBufferBits;
             colorRTDesc.sRGB = (QualitySettings.activeColorSpace == ColorSpace.Linear);
@@ -78,7 +78,7 @@ public class SRP0702Instance : RenderPipeline
             cmdTempId.GetTemporaryRT(m_ColorRTid, colorRTDesc,FilterMode.Bilinear);
 
             //Depth
-            RenderTextureDescriptor depthRTDesc = new RenderTextureDescriptor(camera.pixelWidth, camera.pixelHeight);
+            var depthRTDesc = new RenderTextureDescriptor(camera.pixelWidth, camera.pixelHeight);
             depthRTDesc.colorFormat = RenderTextureFormat.Depth;
             depthRTDesc.depthBufferBits = depthBufferBits;
             cmdTempId.GetTemporaryRT(m_DepthRTid, depthRTDesc,FilterMode.Bilinear);
@@ -89,9 +89,9 @@ public class SRP0702Instance : RenderPipeline
             //************************** Setup DrawSettings and FilterSettings ************************************
 
             var sortingSettings = new SortingSettings(camera);
-            DrawingSettings drawSettings = new DrawingSettings(m_PassName, sortingSettings);
-            FilteringSettings filterSettings = new FilteringSettings(RenderQueueRange.all);
-            DrawingSettings drawSettingsDepth = new DrawingSettings(m_PassName, sortingSettings)
+            var drawSettings = new DrawingSettings(m_PassName, sortingSettings);
+            var filterSettings = new FilteringSettings(RenderQueueRange.all);
+            var drawSettingsDepth = new DrawingSettings(m_PassName, sortingSettings)
             {
                 perObjectData = PerObjectData.None,
                 overrideMaterial = depthOnlyMaterial,
@@ -101,7 +101,7 @@ public class SRP0702Instance : RenderPipeline
             //************************** Rendering depth ************************************
 
             //Set RenderTarget & Camera clear flag
-            CommandBuffer cmdDepth = new CommandBuffer();
+            var cmdDepth = new CommandBuffer();
             cmdDepth.name = "("+camera.name+")"+ "Depth Clear Flag";
             cmdDepth.SetRenderTarget(m_DepthRT); //Set CameraTarget to the depth texture
             cmdDepth.ClearRenderTarget(true, true, Color.black);
@@ -115,7 +115,7 @@ public class SRP0702Instance : RenderPipeline
             context.DrawRenderers(cull, ref drawSettingsDepth, ref filterSettings);
 
             //To let shader has _CameraDepthTexture, to make Depth of Field work
-            CommandBuffer cmdDepthTexture = new CommandBuffer();
+            var cmdDepthTexture = new CommandBuffer();
             cmdDepthTexture.name = "("+camera.name+")"+ "Depth Texture";
             cmdDepthTexture.SetGlobalTexture(m_DepthRTid,m_DepthRT);
             context.ExecuteCommandBuffer(cmdDepthTexture);
@@ -124,7 +124,7 @@ public class SRP0702Instance : RenderPipeline
             //************************** Rendering colors ************************************
             
             //Set RenderTarget & Camera clear flag
-            CommandBuffer cmd = new CommandBuffer();
+            var cmd = new CommandBuffer();
             cmd.name = "("+camera.name+")"+ "Clear Flag";
             cmd.SetRenderTarget(m_ColorRT); //Set CameraTarget to the color texture
             cmd.ClearRenderTarget(clearDepth, clearColor, camera.backgroundColor);
@@ -143,7 +143,7 @@ public class SRP0702Instance : RenderPipeline
 
             //************************** SetUp Post-processing ************************************
             
-            PostProcessLayer m_CameraPostProcessLayer = camera.GetComponent<PostProcessLayer>();
+            var m_CameraPostProcessLayer = camera.GetComponent<PostProcessLayer>();
             bool hasPostProcessing = m_CameraPostProcessLayer != null;
             bool usePostProcessing =  false;
             bool hasOpaqueOnlyEffects = false;
@@ -160,7 +160,7 @@ public class SRP0702Instance : RenderPipeline
             //So this part is only for custom opaque post-processing
             if(usePostProcessing)
             {
-                CommandBuffer cmdpp = new CommandBuffer();
+                var cmdpp = new CommandBuffer();
                 cmdpp.name = "("+camera.name+")"+ "Post-processing Opaque";
 
                 m_PostProcessRenderContext.Reset();
@@ -187,7 +187,7 @@ public class SRP0702Instance : RenderPipeline
             //Bloom, Vignette, Grain, ColorGrading, LensDistortion, Chromatic Aberration, Auto Exposure
             if(usePostProcessing)
             {
-                CommandBuffer cmdpp = new CommandBuffer();
+                var cmdpp = new CommandBuffer();
                 cmdpp.name = "("+camera.name+")"+ "Post-processing Transparent";
 
                 m_PostProcessRenderContext.Reset();
@@ -206,7 +206,7 @@ public class SRP0702Instance : RenderPipeline
             //************************** Make sure screen has the thing when Postprocessing is off ************************************
             if(!usePostProcessing)
             {
-                CommandBuffer cmdBlitToCam = new CommandBuffer();
+                var cmdBlitToCam = new CommandBuffer();
                 cmdBlitToCam.name = "("+camera.name+")"+ "Blit back to Camera";
                 cmdBlitToCam.Blit(m_ColorRTid, BuiltinRenderTextureType.CameraTarget);
                 context.ExecuteCommandBuffer(cmdBlitToCam);
@@ -214,7 +214,7 @@ public class SRP0702Instance : RenderPipeline
             }
 
             //************************** Clean Up ************************************
-            CommandBuffer cmdclean = new CommandBuffer();
+            var cmdclean = new CommandBuffer();
             cmdclean.name = "("+camera.name+")"+ "Clean Up";
             cmdclean.ReleaseTemporaryRT(m_ColorRTid);
             cmdclean.ReleaseTemporaryRT(m_DepthRTid);

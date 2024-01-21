@@ -9,9 +9,9 @@ using UnityEngine.Experimental.Rendering;
 // This pass does a image effect that Albedo + Emission = final color
 public partial class SRP0802_RenderGraph
 {
-    Material m_material;
+    private Material m_material;
 
-    class SRP0802_AddPassData
+    private class SRP0802_AddPassData
     {
         public TextureHandle m_Albedo;
         public TextureHandle m_Emission;

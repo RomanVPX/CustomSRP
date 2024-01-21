@@ -10,14 +10,14 @@ public class SRP0201_CamSwitch : MonoBehaviour
     private GUIStyle style;
     private float scale = 1;
 
-    void Start()
+    private void Start()
     {
         float scale = Screen.height / 1080f;
 
 
     }
 
-    void OnGUI()
+    private void OnGUI()
     {
         style = GUI.skin.GetStyle("Button");
         style.fontSize = Mathf.RoundToInt ( 30 * scale );

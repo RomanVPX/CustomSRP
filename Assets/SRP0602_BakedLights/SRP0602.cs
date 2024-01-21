@@ -7,7 +7,7 @@ public class SRP0602 : RenderPipelineAsset
 {
     #if UNITY_EDITOR
     [UnityEditor.MenuItem("Assets/Create/Render Pipeline/SRP0602", priority = 1)]
-    static void CreateSRP0602()
+    private static void CreateSRP0602()
     {
         var instance = ScriptableObject.CreateInstance<SRP0602>();
         UnityEditor.AssetDatabase.CreateAsset(instance, "Assets/SRP0602.asset");
@@ -99,21 +99,21 @@ public class SRP0602Instance : RenderPipeline
             bool clearColor = camera.clearFlags == CameraClearFlags.Color? true : false;
 
             //Camera clear flag
-            CommandBuffer cmd = new CommandBuffer();
+            var cmd = new CommandBuffer();
             cmd.ClearRenderTarget(clearDepth, clearColor, camera.backgroundColor);
             context.ExecuteCommandBuffer(cmd);
             cmd.Release();
 
             //Setup DrawSettings and FilterSettings
             var sortingSettings = new SortingSettings(camera);
-            DrawingSettings drawSettings = new DrawingSettings(m_PassName, sortingSettings)
+            var drawSettings = new DrawingSettings(m_PassName, sortingSettings)
             {
                 perObjectData = PerObjectData.Lightmaps | 
                                 PerObjectData.LightProbe | 
                                 PerObjectData.LightProbeProxyVolume |
                                 PerObjectData.ReflectionProbes
             };
-            FilteringSettings filterSettings = new FilteringSettings(RenderQueueRange.all);
+            var filterSettings = new FilteringSettings(RenderQueueRange.all);
             GraphicsSettings.useScriptableRenderPipelineBatching = false; 
             // ^if it's true it breaks the baked data
 

@@ -8,7 +8,7 @@ public class SRP0603 : RenderPipelineAsset
 {
     #if UNITY_EDITOR
     [UnityEditor.MenuItem("Assets/Create/Render Pipeline/SRP0603", priority = 1)]
-    static void CreateSRP0603()
+    private static void CreateSRP0603()
     {
         var instance = ScriptableObject.CreateInstance<SRP0603>();
         UnityEditor.AssetDatabase.CreateAsset(instance, "Assets/SRP0603.asset");
@@ -41,13 +41,13 @@ public class SRP0603Instance : RenderPipeline
     private static float m_shadowDistance = 50; //QualitySettings.shadowDistance
 
     //Realtime Lights
-    static int lightColorID = Shader.PropertyToID("_LightColorArray");
-    static int lightDataID = Shader.PropertyToID("_LightDataArray");
-    static int lightSpotDirID = Shader.PropertyToID("_LightSpotDirArray");
-    private const int lightCount = 16;      
-    Vector4[] lightColor = new Vector4[lightCount];
-    Vector4[] lightData = new Vector4[lightCount];
-    Vector4[] lightSpotDir = new Vector4[lightCount];
+    private static int lightColorID = Shader.PropertyToID("_LightColorArray");
+    private static int lightDataID = Shader.PropertyToID("_LightDataArray");
+    private static int lightSpotDirID = Shader.PropertyToID("_LightSpotDirArray");
+    private const int lightCount = 16;
+    private Vector4[] lightColor = new Vector4[lightCount];
+    private Vector4[] lightData = new Vector4[lightCount];
+    private Vector4[] lightSpotDir = new Vector4[lightCount];
 
     public SRP0603Instance()
     {
@@ -71,28 +71,28 @@ public class SRP0603Instance : RenderPipeline
 
             //Setup DrawSettings and FilterSettings
             var sortingSettings = new SortingSettings(camera);
-            DrawingSettings drawSettings = new DrawingSettings(m_PassName, sortingSettings)
+            var drawSettings = new DrawingSettings(m_PassName, sortingSettings)
             {
                 perObjectData = PerObjectData.LightIndices | PerObjectData.LightData
             };
-            DrawingSettings drawSettingsDepth = new DrawingSettings(m_passNameShadow, sortingSettings);
-            FilteringSettings filterSettings = new FilteringSettings(RenderQueueRange.all);
+            var drawSettingsDepth = new DrawingSettings(m_passNameShadow, sortingSettings);
+            var filterSettings = new FilteringSettings(RenderQueueRange.all);
 
             //Set temp RT
-            CommandBuffer cmdTempId = new CommandBuffer();
+            var cmdTempId = new CommandBuffer();
             cmdTempId.name = "("+camera.name+")"+ "Setup TempRT";
                 //Depth
-                RenderTextureDescriptor depthRTDesc = new RenderTextureDescriptor(camera.pixelWidth, camera.pixelHeight);
+                var depthRTDesc = new RenderTextureDescriptor(camera.pixelWidth, camera.pixelHeight);
                 depthRTDesc.colorFormat = RenderTextureFormat.Depth;
                 depthRTDesc.depthBufferBits = depthBufferBits;
                 cmdTempId.GetTemporaryRT(m_DepthRTid, depthRTDesc,FilterMode.Bilinear);
                 //Shadow
-                RenderTextureDescriptor shadowRTDesc = new RenderTextureDescriptor(m_ShadowRes,m_ShadowRes);
+                var shadowRTDesc = new RenderTextureDescriptor(m_ShadowRes,m_ShadowRes);
                 shadowRTDesc.colorFormat = RenderTextureFormat.Shadowmap;
                 shadowRTDesc.depthBufferBits = depthBufferBits; //have depth because it is also a depth texture
                 cmdTempId.GetTemporaryRT(m_ShadowMapLightid, shadowRTDesc,FilterMode.Bilinear);//depth per light
                 //ScreenSpaceShadowMap
-                RenderTextureDescriptor shadowMapRTDesc = new RenderTextureDescriptor(camera.pixelWidth, camera.pixelHeight);
+                var shadowMapRTDesc = new RenderTextureDescriptor(camera.pixelWidth, camera.pixelHeight);
                 shadowMapRTDesc.colorFormat = RenderTextureFormat.Default;
                 shadowMapRTDesc.depthBufferBits = 0;
                 cmdTempId.GetTemporaryRT(m_ShadowMapid, shadowMapRTDesc, FilterMode.Bilinear);//screen space shadow
@@ -103,7 +103,7 @@ public class SRP0603Instance : RenderPipeline
             context.SetupCameraProperties(camera);
 
             //Clear ScreenSpaceShadowMap Texture
-            CommandBuffer cmdSSSMclear = new CommandBuffer();
+            var cmdSSSMclear = new CommandBuffer();
             cmdSSSMclear.name = "("+camera.name+")"+ "Clear ScreenSpaceShadowMap";
             cmdSSSMclear.SetRenderTarget(m_ShadowMap); //Set CameraTarget to the depth texture
             cmdSSSMclear.ClearRenderTarget(false, true, Color.white);
@@ -111,7 +111,7 @@ public class SRP0603Instance : RenderPipeline
             cmdSSSMclear.Release();
 
             //Clear Depth Texture
-            CommandBuffer cmdDepth = new CommandBuffer();
+            var cmdDepth = new CommandBuffer();
             cmdDepth.name = "("+camera.name+")"+ "Depth Clear Flag";
             cmdDepth.SetRenderTarget(m_DepthRT); //Set CameraTarget to the depth texture
             cmdDepth.ClearRenderTarget(true, true, Color.black);
@@ -125,7 +125,7 @@ public class SRP0603Instance : RenderPipeline
             context.DrawRenderers(cull, ref drawSettingsDepth, ref filterSettings);
 
             //To let shader has _CameraDepthTexture
-            CommandBuffer cmdDepthTexture = new CommandBuffer();
+            var cmdDepthTexture = new CommandBuffer();
             cmdDepthTexture.name = "("+camera.name+")"+ "Depth Texture";
             cmdDepthTexture.SetGlobalTexture(m_DepthRTid,m_DepthRT);
             context.ExecuteCommandBuffer(cmdDepthTexture);
@@ -171,7 +171,7 @@ public class SRP0603Instance : RenderPipeline
             context.DrawRenderers(cull, ref drawSettings, ref filterSettings);
 
             //Clean Up
-            CommandBuffer cmdclean = new CommandBuffer();
+            var cmdclean = new CommandBuffer();
             cmdclean.name = "("+camera.name+")"+ "Clean Up";
             cmdclean.ReleaseTemporaryRT(m_DepthRTid);
             cmdclean.ReleaseTemporaryRT(m_ShadowMapLightid);
@@ -196,7 +196,7 @@ public class SRP0603Instance : RenderPipeline
         if (doShadow)
         {
             BatchCullingProjectionType projType = cam.orthographic? BatchCullingProjectionType.Orthographic : BatchCullingProjectionType.Perspective;
-            ShadowDrawingSettings shadowSettings = new ShadowDrawingSettings(cull, lightIndex, projType);
+            var shadowSettings = new ShadowDrawingSettings(cull, lightIndex, projType);
 
             //For shadowmapping, the matrices from the light's point of view
             Matrix4x4 view = Matrix4x4.identity;
@@ -218,7 +218,7 @@ public class SRP0603Instance : RenderPipeline
 
             if(successShadowMap)
             {
-                CommandBuffer cmdShadow = new CommandBuffer();
+                var cmdShadow = new CommandBuffer();
                 cmdShadow.name = "Shadow Mapping: light"+lightIndex;
                 cmdShadow.SetRenderTarget(m_ShadowMapLight);
                 cmdShadow.ClearRenderTarget(true, true, Color.black);
@@ -241,7 +241,7 @@ public class SRP0603Instance : RenderPipeline
                 cmdShadow.Release();
 
                 //Screen Space Shadow =================================================
-                CommandBuffer cmdShadow2 = new CommandBuffer();
+                var cmdShadow2 = new CommandBuffer();
                 cmdShadow2.name = "Screen Space Shadow: light"+lightIndex;
 
                 //Bias

@@ -7,7 +7,7 @@ public class SRP0203 : RenderPipelineAsset
 {
     #if UNITY_EDITOR
     [UnityEditor.MenuItem("Assets/Create/Render Pipeline/SRP0203", priority = 1)]
-    static void CreateSRP0203()
+    private static void CreateSRP0203()
     {
         var instance = ScriptableObject.CreateInstance<SRP0203>();
         UnityEditor.AssetDatabase.CreateAsset(instance, "Assets/SRP0203.asset");
@@ -51,15 +51,15 @@ public class SRP0203Instance : RenderPipeline
             bool clearColor = camera.clearFlags == CameraClearFlags.Color? true : false;
 
             //Camera clear flag
-            CommandBuffer cmd = new CommandBuffer();
+            var cmd = new CommandBuffer();
             cmd.ClearRenderTarget(clearDepth, clearColor, camera.backgroundColor);
             context.ExecuteCommandBuffer(cmd);
             cmd.Release();
 
             //Setup DrawSettings and FilterSettings
             var sortingSettings = new SortingSettings(camera);
-            DrawingSettings drawSettings = new DrawingSettings(m_PassName, sortingSettings);
-            FilteringSettings filterSettings = new FilteringSettings(RenderQueueRange.all);
+            var drawSettings = new DrawingSettings(m_PassName, sortingSettings);
+            var filterSettings = new FilteringSettings(RenderQueueRange.all);
             //filterSettings.layerMask = 1; //only draws objects marked with UI layer
             filterSettings.renderingLayerMask = 1 << 4; //only draws renderers that has RenderingLayerMask Layer5 **********************************
 

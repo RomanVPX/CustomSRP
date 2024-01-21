@@ -7,7 +7,7 @@ public class SRP0501 : RenderPipelineAsset
 {
     #if UNITY_EDITOR
     [UnityEditor.MenuItem("Assets/Create/Render Pipeline/SRP0501", priority = 1)]
-    static void CreateSRP0501()
+    private static void CreateSRP0501()
     {
         var instance = ScriptableObject.CreateInstance<SRP0501>();
         UnityEditor.AssetDatabase.CreateAsset(instance, "Assets/SRP0501.asset");
@@ -57,9 +57,9 @@ public class SRP0501Instance : RenderPipeline
             bool clearColor = camera.clearFlags == CameraClearFlags.Color? true : false;
 
             //Set Depth texture temp RT
-            CommandBuffer cmdTempId = new CommandBuffer();
+            var cmdTempId = new CommandBuffer();
             cmdTempId.name = "("+camera.name+")"+ "Setup TempRT";
-            RenderTextureDescriptor depthRTDesc = new RenderTextureDescriptor(camera.pixelWidth, camera.pixelHeight);
+            var depthRTDesc = new RenderTextureDescriptor(camera.pixelWidth, camera.pixelHeight);
                 depthRTDesc.colorFormat = RenderTextureFormat.Depth;
                 depthRTDesc.depthBufferBits = depthBufferBits;
                 cmdTempId.GetTemporaryRT(m_DepthRTid, depthRTDesc,FilterMode.Bilinear);
@@ -68,9 +68,9 @@ public class SRP0501Instance : RenderPipeline
 
             //Setup DrawSettings and FilterSettings
             var sortingSettings = new SortingSettings(camera);
-            DrawingSettings drawSettings = new DrawingSettings(m_PassName, sortingSettings);
-            FilteringSettings filterSettings = new FilteringSettings(RenderQueueRange.all);
-            DrawingSettings drawSettingsDepth = new DrawingSettings(m_PassName, sortingSettings)
+            var drawSettings = new DrawingSettings(m_PassName, sortingSettings);
+            var filterSettings = new FilteringSettings(RenderQueueRange.all);
+            var drawSettingsDepth = new DrawingSettings(m_PassName, sortingSettings)
             {
                 perObjectData = PerObjectData.None,
                 overrideMaterial = depthOnlyMaterial,
@@ -78,7 +78,7 @@ public class SRP0501Instance : RenderPipeline
             };
 
             //Clear Depth Texture
-            CommandBuffer cmdDepth = new CommandBuffer();
+            var cmdDepth = new CommandBuffer();
             cmdDepth.name = "("+camera.name+")"+ "Depth Clear Flag";
             cmdDepth.SetRenderTarget(m_DepthRT); //Set CameraTarget to the depth texture
             cmdDepth.ClearRenderTarget(true, true, Color.black);
@@ -92,14 +92,14 @@ public class SRP0501Instance : RenderPipeline
             context.DrawRenderers(cull, ref drawSettingsDepth, ref filterSettings);
 
             //To let shader has _CameraDepthTexture
-            CommandBuffer cmdDepthTexture = new CommandBuffer();
+            var cmdDepthTexture = new CommandBuffer();
             cmdDepthTexture.name = "("+camera.name+")"+ "Depth Texture";
             cmdDepthTexture.SetGlobalTexture(m_DepthRTid,m_DepthRT);
             context.ExecuteCommandBuffer(cmdDepthTexture);
             cmdDepthTexture.Release();
 
             //Camera clear flag
-            CommandBuffer cmd = new CommandBuffer();
+            var cmd = new CommandBuffer();
             cmd.SetRenderTarget(BuiltinRenderTextureType.CameraTarget); //Rember to reset target
             cmd.ClearRenderTarget(clearDepth, clearColor, camera.backgroundColor);
             context.ExecuteCommandBuffer(cmd);
@@ -121,7 +121,7 @@ public class SRP0501Instance : RenderPipeline
             context.DrawRenderers(cull, ref drawSettings, ref filterSettings);
 
             //Clean Up
-            CommandBuffer cmdclean = new CommandBuffer();
+            var cmdclean = new CommandBuffer();
             cmdclean.name = "("+camera.name+")"+ "Clean Up";
             cmdclean.ReleaseTemporaryRT(m_DepthRTid);
             context.ExecuteCommandBuffer(cmdclean);

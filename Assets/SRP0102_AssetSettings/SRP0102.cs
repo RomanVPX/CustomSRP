@@ -37,15 +37,15 @@ namespace SRP0102
                 bool clearColor = camera.clearFlags == CameraClearFlags.Color? true : false;
 
                 //Camera clear flag
-                CommandBuffer cmd = new CommandBuffer();
+                var cmd = new CommandBuffer();
                 cmd.ClearRenderTarget(clearDepth, clearColor, camera.backgroundColor);
                 context.ExecuteCommandBuffer(cmd);
                 cmd.Release();
 
                 //Setup DrawSettings and FilterSettings
                 var sortingSettings = new SortingSettings(camera);
-                DrawingSettings drawSettings = new DrawingSettings(m_PassName, sortingSettings);
-                FilteringSettings filterSettings = new FilteringSettings(RenderQueueRange.all);
+                var drawSettings = new DrawingSettings(m_PassName, sortingSettings);
+                var filterSettings = new FilteringSettings(RenderQueueRange.all);
 
                 //Skybox
                 if(drawSkyBox)  {  context.DrawSkybox(camera);  }

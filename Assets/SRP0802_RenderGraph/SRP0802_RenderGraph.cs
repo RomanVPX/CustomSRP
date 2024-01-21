@@ -32,7 +32,7 @@ public partial class SRP0802_RenderGraph : RenderPipeline
 
             //Execute graph 
             CommandBuffer cmdRG = CommandBufferPool.Get("ExecuteRenderGraph");
-            RenderGraphParameters rgParams = new RenderGraphParameters()
+            var rgParams = new RenderGraphParameters()
             {
                 executionName = "SRP0802_RenderGraph_Execute",
                 commandBuffer = cmdRG,

@@ -11,12 +11,12 @@ using UnityEngine.Experimental.Rendering;
 // Emission - animated color
 public partial class SRP0802_RenderGraph
 {
-    ShaderTagId m_PassName1 = new ShaderTagId("SRP0802_Pass1"); //The shader pass tag just for SRP0802
+    private ShaderTagId m_PassName1 = new ShaderTagId("SRP0802_Pass1"); //The shader pass tag just for SRP0802
 
     public class SRP0802_BasePassData
     {
-        public RendererListHandle m_renderList_opaque;
-        public RendererListHandle m_renderList_transparent;
+        public RendererListHandle m_RenderList_Opaque;
+        public RendererListHandle m_RenderList_Transparent;
         public TextureHandle m_Albedo;
         public TextureHandle m_Emission;
         public TextureHandle m_Depth;
@@ -27,14 +27,16 @@ public partial class SRP0802_RenderGraph
         bool colorRT_sRGB = (QualitySettings.activeColorSpace == ColorSpace.Linear);
 
         //Texture description
-        TextureDesc colorRTDesc = new TextureDesc(camera.pixelWidth, camera.pixelHeight);
-        colorRTDesc.colorFormat = GraphicsFormatUtility.GetGraphicsFormat(RenderTextureFormat.Default,colorRT_sRGB);
-        colorRTDesc.depthBufferBits = 0;
-        colorRTDesc.msaaSamples = MSAASamples.None;
-        colorRTDesc.enableRandomWrite = false;
-        colorRTDesc.clearBuffer = true;
-        colorRTDesc.clearColor = Color.black;
-        colorRTDesc.name = name;
+        var colorRTDesc = new TextureDesc(camera.pixelWidth, camera.pixelHeight)
+        {
+            colorFormat = GraphicsFormatUtility.GetGraphicsFormat(RenderTextureFormat.Default,colorRT_sRGB),
+            depthBufferBits = 0,
+            msaaSamples = MSAASamples.None,
+            enableRandomWrite = false,
+            clearBuffer = true,
+            clearColor = Color.black,
+            name = name
+        };
 
         return graph.CreateTexture(colorRTDesc);
     }
@@ -44,51 +46,57 @@ public partial class SRP0802_RenderGraph
         bool colorRT_sRGB = (QualitySettings.activeColorSpace == ColorSpace.Linear);
 
         //Texture description
-        TextureDesc colorRTDesc = new TextureDesc(camera.pixelWidth, camera.pixelHeight);
-        colorRTDesc.colorFormat = GraphicsFormatUtility.GetGraphicsFormat(RenderTextureFormat.Depth,colorRT_sRGB);
-        colorRTDesc.depthBufferBits = DepthBits.Depth24;
-        colorRTDesc.msaaSamples = MSAASamples.None;
-        colorRTDesc.enableRandomWrite = false;
-        colorRTDesc.clearBuffer = true;
-        colorRTDesc.clearColor = Color.black;
-        colorRTDesc.name = "Depth";
+        var colorRTDesc = new TextureDesc(camera.pixelWidth, camera.pixelHeight)
+        {
+            colorFormat = GraphicsFormatUtility.GetGraphicsFormat(RenderTextureFormat.Depth,colorRT_sRGB),
+            depthBufferBits = DepthBits.Depth24,
+            msaaSamples = MSAASamples.None,
+            enableRandomWrite = false,
+            clearBuffer = true,
+            clearColor = Color.black,
+            name = "Depth"
+        };
 
         return graph.CreateTexture(colorRTDesc);
     }
 
     public SRP0802_BasePassData Render_SRP0802_BasePass(Camera camera, RenderGraph graph, CullingResults cull)
     {
-        using (var builder = graph.AddRenderPass<SRP0802_BasePassData>( "Base Pass", out var passData, new ProfilingSampler("Base Pass Profiler" ) ) )
+        using (RenderGraphBuilder builder = graph.AddRenderPass( "Base Pass", out SRP0802_BasePassData passData, new ProfilingSampler("Base Pass Profiler" ) ) )
         {
             //Textures - Multi-RenderTarget
-            TextureHandle Albedo = CreateColorTexture(graph,camera,"Albedo");
-            passData.m_Albedo = builder.UseColorBuffer(Albedo,0);
-            TextureHandle Emission = CreateColorTexture(graph,camera,"Emission");
-            passData.m_Emission = builder.UseColorBuffer(Emission,1);
-            TextureHandle Depth = CreateDepthTexture(graph,camera);
-            passData.m_Depth = builder.UseDepthBuffer(Depth, DepthAccess.Write);
+            TextureHandle albedo_handle = CreateColorTexture(graph,camera,"Albedo");
+            passData.m_Albedo = builder.UseColorBuffer(albedo_handle,0);
+            TextureHandle emission_handle = CreateColorTexture(graph,camera,"Emission");
+            passData.m_Emission = builder.UseColorBuffer(emission_handle,1);
+            TextureHandle depth_handle = CreateDepthTexture(graph,camera);
+            passData.m_Depth = builder.UseDepthBuffer(depth_handle, DepthAccess.Write);
 
             //Renderers
-            UnityEngine.Rendering.RendererUtils.RendererListDesc rendererDesc_base_Opaque = new UnityEngine.Rendering.RendererUtils.RendererListDesc(m_PassName1,cull,camera);
-            rendererDesc_base_Opaque.sortingCriteria = SortingCriteria.CommonOpaque;
-            rendererDesc_base_Opaque.renderQueueRange = RenderQueueRange.opaque;
-            RendererListHandle rHandle_base_Opaque = graph.CreateRendererList(rendererDesc_base_Opaque);
-            passData.m_renderList_opaque = builder.UseRendererList(rHandle_base_Opaque);
+            var rendererDesc_base_opaque = new UnityEngine.Rendering.RendererUtils.RendererListDesc(m_PassName1,cull,camera)
+            {
+                sortingCriteria = SortingCriteria.CommonOpaque,
+                renderQueueRange = RenderQueueRange.opaque
+            };
+            RendererListHandle rHandle_base_opaque = graph.CreateRendererList(rendererDesc_base_opaque);
+            passData.m_RenderList_Opaque = builder.UseRendererList(rHandle_base_opaque);
 
-            UnityEngine.Rendering.RendererUtils.RendererListDesc rendererDesc_base_Transparent = new UnityEngine.Rendering.RendererUtils.RendererListDesc(m_PassName1,cull,camera);
-            rendererDesc_base_Transparent.sortingCriteria = SortingCriteria.CommonTransparent;
-            rendererDesc_base_Transparent.renderQueueRange = RenderQueueRange.transparent;
-            RendererListHandle rHandle_base_Transparent= graph.CreateRendererList(rendererDesc_base_Transparent);
-            passData.m_renderList_transparent = builder.UseRendererList(rHandle_base_Transparent);
-            
+            var rendererDesc_base_transparent = new UnityEngine.Rendering.RendererUtils.RendererListDesc(m_PassName1,cull,camera)
+            {
+                sortingCriteria = SortingCriteria.CommonTransparent,
+                renderQueueRange = RenderQueueRange.transparent
+            };
+            RendererListHandle rHandle_base_transparent= graph.CreateRendererList(rendererDesc_base_transparent);
+            passData.m_RenderList_Transparent = builder.UseRendererList(rHandle_base_transparent);
+
             //Builder
-            builder.SetRenderFunc((SRP0802_BasePassData data, RenderGraphContext context) => 
+            builder.SetRenderFunc((SRP0802_BasePassData data, RenderGraphContext context) =>
             {
                 //Skybox - this will draw to the first target, i.e. Albedo
                 if(camera.clearFlags == CameraClearFlags.Skybox)  {  context.renderContext.DrawSkybox(camera);  }
 
-                CoreUtils.DrawRendererList( context.renderContext, context.cmd, data.m_renderList_opaque );
-                CoreUtils.DrawRendererList( context.renderContext, context.cmd, data.m_renderList_transparent );
+                CoreUtils.DrawRendererList( context.renderContext, context.cmd, data.m_RenderList_Opaque );
+                CoreUtils.DrawRendererList( context.renderContext, context.cmd, data.m_RenderList_Transparent );
             });
 
             return passData;

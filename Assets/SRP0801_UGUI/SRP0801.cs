@@ -7,7 +7,7 @@ public class SRP0801 : RenderPipelineAsset
 {
     #if UNITY_EDITOR
     [UnityEditor.MenuItem("Assets/Create/Render Pipeline/SRP0801", priority = 1)]
-    static void CreateSRP0801()
+    private static void CreateSRP0801()
     {
         var instance = ScriptableObject.CreateInstance<SRP0801>();
         UnityEditor.AssetDatabase.CreateAsset(instance, "Assets/SRP0801.asset");
@@ -57,19 +57,19 @@ public class SRP0801Instance : RenderPipeline
             bool clearColor = camera.clearFlags == CameraClearFlags.Color? true : false;
 
             //Camera clear flag
-            CommandBuffer cmd = new CommandBuffer();
+            var cmd = new CommandBuffer();
             cmd.ClearRenderTarget(clearDepth, clearColor, camera.backgroundColor);
             context.ExecuteCommandBuffer(cmd);
             cmd.Release();
 
             //Setup DrawSettings and FilterSettings
             var sortingSettings = new SortingSettings(camera);
-            DrawingSettings drawSettings = new DrawingSettings(m_PassName, sortingSettings);
-           DrawingSettings drawSettingsDefault = new DrawingSettings(m_PassNameDefault, sortingSettings);
+            var drawSettings = new DrawingSettings(m_PassName, sortingSettings);
+           var drawSettingsDefault = new DrawingSettings(m_PassNameDefault, sortingSettings);
             //This will let you draw shader passes without the LightMode,
             //thus it draws the default UGUI materials
             drawSettingsDefault.SetShaderPassName(1,m_PassNameDefault); 
-            FilteringSettings filterSettings = new FilteringSettings(RenderQueueRange.all);
+            var filterSettings = new FilteringSettings(RenderQueueRange.all);
 
             //Skybox
             if(drawSkyBox)  {  context.DrawSkybox(camera);  }

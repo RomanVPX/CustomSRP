@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class SRP0406_GUILabel : MonoBehaviour
 {
-    void OnGUI()
+    private void OnGUI()
     {
-        GUIStyle style = new GUIStyle();
+        var style = new GUIStyle();
         style.fontSize = 50;
 
         string message = "Click on the color objects to and check Console messages" + "\n";

@@ -11,7 +11,7 @@ using UnityEngine;
     {
         #if UNITY_EDITOR
 
-        static bool AcceptedDrawMode(SceneView.CameraMode cameraMode)
+        private static bool AcceptedDrawMode(SceneView.CameraMode cameraMode)
         {
             if (
 			    cameraMode.drawMode == DrawCameraMode.Textured ||

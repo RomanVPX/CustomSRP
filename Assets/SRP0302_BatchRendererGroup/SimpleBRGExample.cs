@@ -38,7 +38,7 @@ public class SimpleBRGExample : MonoBehaviour
     // format when the DOTS_INSTANCING_ON keyword is enabled.
     // This saves both GPU memory and GPU bandwidth.
     // We define a convenience type here so we can easily convert into this format.
-    struct PackedMatrix
+    private struct PackedMatrix
     {
         public float c0x;
         public float c0y;
@@ -71,7 +71,7 @@ public class SimpleBRGExample : MonoBehaviour
     }
 
     // During initialization, we will allocate all required objects, and set up our custom instance data.
-    void Start()
+    private void Start()
     {
         // Create the BatchRendererGroup and register assets
         m_BRG = new BatchRendererGroup(this.OnPerformCulling, IntPtr.Zero);

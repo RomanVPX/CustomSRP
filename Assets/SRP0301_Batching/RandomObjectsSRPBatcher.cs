@@ -7,7 +7,7 @@ public class RandomObjectsSRPBatcher : MonoBehaviour
 	//public Texture[] texs;
 	public Renderer[] renderers;
 
-	void Start () 
+    private void Start () 
 	{
 		Randomize();
 	}

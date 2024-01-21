@@ -9,19 +9,19 @@ public class CallbackTest : MonoBehaviour
     public Mesh mesh;
     public Material material;
 
-    void OnEnable()
+    private void OnEnable()
     {
         SRP0405Instance.afterSkybox += MyAfterSkybox;
         SRP0405Instance.afterOpaqueObject += MyAfterOpaque;
         SRP0405Instance.afterTransparentObject += MyAfterTransparent;
     }
 
-    void OnDisable()
+    private void OnDisable()
     {
         CleanUp();
     }
 
-    void OnDestroy()
+    private void OnDestroy()
     {
         CleanUp();
     }
@@ -46,7 +46,7 @@ public class CallbackTest : MonoBehaviour
     private void MyAfterTransparent(Camera cam, ScriptableRenderContext context)
     {
         //Debug.Log("after transparent is called");
-        CommandBuffer cmd = new CommandBuffer();
+        var cmd = new CommandBuffer();
         cmd.DrawMesh(mesh,Matrix4x4.identity,material,0,0);
         context.ExecuteCommandBuffer(cmd);
     }

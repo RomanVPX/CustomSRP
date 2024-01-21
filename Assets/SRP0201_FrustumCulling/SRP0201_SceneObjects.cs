@@ -11,7 +11,7 @@ public class SRP0201_SceneObjects : MonoBehaviour
    // public Camera AllCam;
    // public Camera NoneCam;
 
-    void Start ()
+   private void Start ()
     {
         SRP0201Instance.textMesh = tm;
         SRP0201Instance.lights = lights;

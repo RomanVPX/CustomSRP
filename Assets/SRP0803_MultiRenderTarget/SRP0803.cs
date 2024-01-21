@@ -7,7 +7,7 @@ public class SRP0803 : RenderPipelineAsset
 {
     #if UNITY_EDITOR
     [UnityEditor.MenuItem("Assets/Create/Render Pipeline/SRP0803", priority = 1)]
-    static void CreateSRP0803()
+    private static void CreateSRP0803()
     {
         var instance = ScriptableObject.CreateInstance<SRP0803>();
         UnityEditor.AssetDatabase.CreateAsset(instance, "Assets/SRP0803.asset");
@@ -34,7 +34,7 @@ public class SRP0803Instance : RenderPipeline
     private static RenderTargetIdentifier m_EmissionRT = new RenderTargetIdentifier(m_EmissionRTid);
     private static RenderTargetIdentifier m_DepthRT = new RenderTargetIdentifier(m_DepthRTid);
 
-    RenderTargetIdentifier[] mRTIDs = new RenderTargetIdentifier[2];
+    private RenderTargetIdentifier[] mRTIDs = new RenderTargetIdentifier[2];
 
     public SRP0803Instance()
     {
@@ -65,7 +65,7 @@ public class SRP0803Instance : RenderPipeline
             bool drawSkyBox = camera.clearFlags == CameraClearFlags.Skybox? true : false;
 
             //Texture Descriptor - Color
-            RenderTextureDescriptor rtDesc = new RenderTextureDescriptor(camera.pixelWidth, camera.pixelHeight);
+            var rtDesc = new RenderTextureDescriptor(camera.pixelWidth, camera.pixelHeight);
             rtDesc.graphicsFormat = m_ColorFormat;
             rtDesc.depthBufferBits = 0;
             rtDesc.sRGB = (QualitySettings.activeColorSpace == ColorSpace.Linear);
@@ -73,14 +73,14 @@ public class SRP0803Instance : RenderPipeline
             rtDesc.enableRandomWrite = false;
 
             //Texture Descriptor - Depth
-            RenderTextureDescriptor rtDescDepth = new RenderTextureDescriptor(camera.pixelWidth, camera.pixelHeight);
+            var rtDescDepth = new RenderTextureDescriptor(camera.pixelWidth, camera.pixelHeight);
             rtDescDepth.colorFormat = RenderTextureFormat.Depth;
             rtDescDepth.depthBufferBits = 24;
             rtDescDepth.msaaSamples = 1;
             rtDescDepth.enableRandomWrite = false;
 
             //Get Temp Texture for Color Texture
-            CommandBuffer cmdTempId = new CommandBuffer();
+            var cmdTempId = new CommandBuffer();
             cmdTempId.name = "("+camera.name+")"+ "Setup TempRT";
             cmdTempId.GetTemporaryRT(m_AlbedoRTid, rtDesc,FilterMode.Point);
             cmdTempId.GetTemporaryRT(m_EmissionRTid, rtDesc,FilterMode.Point);
@@ -90,13 +90,13 @@ public class SRP0803Instance : RenderPipeline
 
             //Setup DrawSettings and FilterSettings
             var sortingSettings = new SortingSettings(camera);
-            DrawingSettings drawSettings = new DrawingSettings(m_PassName, sortingSettings);
-            FilteringSettings filterSettings = new FilteringSettings(RenderQueueRange.all);
+            var drawSettings = new DrawingSettings(m_PassName, sortingSettings);
+            var filterSettings = new FilteringSettings(RenderQueueRange.all);
 
             //Pass 1=========================================================
 
             //SetUp Multi-RenderTargets For the 1st pass & clear
-            CommandBuffer cmdPass1 = new CommandBuffer();
+            var cmdPass1 = new CommandBuffer();
             mRTIDs[0] = m_AlbedoRTid;
             mRTIDs[1] = m_EmissionRTid;
             cmdPass1.SetRenderTarget(mRTIDs,m_DepthRT);
@@ -122,14 +122,14 @@ public class SRP0803Instance : RenderPipeline
             //Final blit====================================================
 
             //Blit to CameraTarget, to combine the previous 2 texture results with a blit material
-            CommandBuffer cmd = new CommandBuffer();
+            var cmd = new CommandBuffer();
             cmd.name = "Cam:"+camera.name+" BlitToCamera";
             cmd.Blit(BuiltinRenderTextureType.CameraTarget,BuiltinRenderTextureType.CameraTarget,copyColorMaterial);
             context.ExecuteCommandBuffer(cmd);
             cmd.Release(); 
 
             //CleanUp Texture
-            CommandBuffer cmdclean = new CommandBuffer();
+            var cmdclean = new CommandBuffer();
             cmdclean.name = "("+camera.name+")"+ "Clean Up";
             cmdclean.ReleaseTemporaryRT(m_AlbedoRTid);
             cmdclean.ReleaseTemporaryRT(m_EmissionRTid);

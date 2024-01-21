@@ -7,7 +7,7 @@ public class SRP1001 : RenderPipelineAsset
 {
     #if UNITY_EDITOR
     [UnityEditor.MenuItem("Assets/Create/Render Pipeline/SRP1001", priority = 1)]
-    static void CreateSRP1001()
+    private static void CreateSRP1001()
     {
         var instance = ScriptableObject.CreateInstance<SRP1001>();
         UnityEditor.AssetDatabase.CreateAsset(instance, "Assets/SRP1001.asset");
@@ -51,7 +51,7 @@ public class SRP1001Instance : RenderPipeline
         {
             sortingSettings.criteria = SortingCriteria.None;
             filterSettings.renderQueueRange = RenderQueueRange.all;
-            DrawingSettings errorSettings = new DrawingSettings(m_LegacyShaderPassNames[0], sortingSettings)
+            var errorSettings = new DrawingSettings(m_LegacyShaderPassNames[0], sortingSettings)
             {
                 perObjectData = PerObjectData.None,
                 overrideMaterial = errorMaterial,
@@ -88,15 +88,15 @@ public class SRP1001Instance : RenderPipeline
             bool clearColor = camera.clearFlags == CameraClearFlags.Color? true : false;
 
             //Camera clear flag
-            CommandBuffer cmd = new CommandBuffer();
+            var cmd = new CommandBuffer();
             cmd.ClearRenderTarget(clearDepth, clearColor, camera.backgroundColor);
             context.ExecuteCommandBuffer(cmd);
             cmd.Release();
 
             //Setup DrawSettings and FilterSettings
-            SortingSettings sortingSettings = new SortingSettings(camera);
-            DrawingSettings drawSettings = new DrawingSettings(m_PassName, sortingSettings);
-            FilteringSettings filterSettings = new FilteringSettings(RenderQueueRange.all);
+            var sortingSettings = new SortingSettings(camera);
+            var drawSettings = new DrawingSettings(m_PassName, sortingSettings);
+            var filterSettings = new FilteringSettings(RenderQueueRange.all);
 
             //Skybox
             if(drawSkyBox)  {  context.DrawSkybox(camera);  }

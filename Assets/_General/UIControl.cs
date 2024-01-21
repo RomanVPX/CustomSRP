@@ -16,7 +16,7 @@ public class UIControl : MonoBehaviour
         NextScene();
     }
 
-    void OnGUI()
+    private void OnGUI()
     {
         GUI.skin.label.fontSize = Mathf.RoundToInt ( 16 * scale );
         //GUI.backgroundColor = new Color(0, 0, 0, .80f);
@@ -26,7 +26,7 @@ public class UIControl : MonoBehaviour
         GUILayout.BeginArea(new Rect(Screen.width - w -5, Screen.height - h -5, w, h), GUI.skin.box);
 
         //GUI.backgroundColor = new Color(1, 1, 1, .80f);
-        GUIStyle customButton = new GUIStyle("button");
+        var customButton = new GUIStyle("button");
         customButton.fontSize = GUI.skin.label.fontSize;
         customButton.fixedHeight = 50 * scale;
 

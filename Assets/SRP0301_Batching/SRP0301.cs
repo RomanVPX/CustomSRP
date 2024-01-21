@@ -7,7 +7,7 @@ public class SRP0301 : RenderPipelineAsset
 {
     #if UNITY_EDITOR
     [UnityEditor.MenuItem("Assets/Create/Render Pipeline/SRP0301", priority = 1)]
-    static void CreateSRP0301()
+    private static void CreateSRP0301()
     {
         var instance = ScriptableObject.CreateInstance<SRP0301>();
         UnityEditor.AssetDatabase.CreateAsset(instance, "Assets/SRP0301.asset");
@@ -51,17 +51,17 @@ public class SRP0301Instance : RenderPipeline
             bool clearColor = camera.clearFlags == CameraClearFlags.Color? true : false;
 
             //Camera clear flag
-            CommandBuffer cmd = new CommandBuffer();
+            var cmd = new CommandBuffer();
             cmd.ClearRenderTarget(clearDepth, clearColor, camera.backgroundColor);
             context.ExecuteCommandBuffer(cmd);
             cmd.Release();
 
             //Setup DrawSettings and FilterSettings
             var sortingSettings = new SortingSettings(camera);
-            DrawingSettings drawSettings = new DrawingSettings(m_PassName, sortingSettings);
+            var drawSettings = new DrawingSettings(m_PassName, sortingSettings);
             drawSettings.enableDynamicBatching = true; // Dynamic Batching is OFF by-default
             drawSettings.enableInstancing = true; // GPU Instancing is ON by-default
-            FilteringSettings filterSettings = new FilteringSettings(RenderQueueRange.all);
+            var filterSettings = new FilteringSettings(RenderQueueRange.all);
 
             //SRPBatcher
             GraphicsSettings.useScriptableRenderPipelineBatching = true;

@@ -7,7 +7,7 @@ public class SRP0202 : RenderPipelineAsset
 {
     #if UNITY_EDITOR
     [UnityEditor.MenuItem("Assets/Create/Render Pipeline/SRP0202", priority = 1)]
-    static void CreateSRP0202()
+    private static void CreateSRP0202()
     {
         var instance = ScriptableObject.CreateInstance<SRP0202>();
         UnityEditor.AssetDatabase.CreateAsset(instance, "Assets/SRP0202.asset");
@@ -57,11 +57,11 @@ public class SRP0202Instance : RenderPipeline
 
             //Setup DrawSettings and FilterSettings
             var sortingSettings = new SortingSettings(camera);
-            DrawingSettings drawSettings = new DrawingSettings(m_PassName, sortingSettings);
-            FilteringSettings filterSettings = new FilteringSettings(RenderQueueRange.all);
+            var drawSettings = new DrawingSettings(m_PassName, sortingSettings);
+            var filterSettings = new FilteringSettings(RenderQueueRange.all);
 
             //Camera clear flag
-            CommandBuffer cmd = new CommandBuffer();
+            var cmd = new CommandBuffer();
             cmd.name = "Cam:"+camera.name+" ClearFlag";
             cmd.ClearRenderTarget(clearDepth, clearColor, camera.backgroundColor);
             context.ExecuteCommandBuffer(cmd);
