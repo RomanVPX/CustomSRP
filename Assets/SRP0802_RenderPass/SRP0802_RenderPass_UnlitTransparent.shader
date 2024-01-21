@@ -13,6 +13,7 @@
 		Pass
 		{
 			Tags { "LightMode" = "SRP0802_Pass1" }
+			Name "SRP0802 UnlitTransparent PASS1"
 
 			HLSLPROGRAM
 			#pragma vertex vert
@@ -69,6 +70,7 @@
 		Pass
 		{
 			Tags { "LightMode" = "SRP0802_Pass2" }
+			Name "SRP0802 UnlitTransparent PASS2"
 
 			HLSLPROGRAM
 			#pragma vertex vert
